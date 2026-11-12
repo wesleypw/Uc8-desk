@@ -2,7 +2,7 @@
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 import re
 
-FATORES = {'Dinheiro': '0.87', 'PIX': '0.87', 'Débito': '0.92', 'Crédito 1x': '1.00'}
+FATORES = {'Dinheiro': '7', 'PIX': '7', 'Débito': '8', 'Crédito 1x': '9', 'Crédito 2x': '10', 'Crédito 3x': '11'}
 
 def valor_monetario(texto, permitir_zero=True):
     """
