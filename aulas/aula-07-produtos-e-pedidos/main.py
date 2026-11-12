@@ -5,7 +5,7 @@ from modelos import Produto, Item, Pedido, quantidade, formatar
 
 def criar_janela():
     janela = tk.Tk()
-    janela.title("A07 — Sorveteria: Produtos, Itens e Pedido")
+    janela.title("A07 — Sorveteria: Catálogo e Comandas")
     janela.geometry("520x560")
     janela.columnconfigure(0, weight=1)
     janela.rowconfigure(0, weight=1)
@@ -26,8 +26,8 @@ def criar_janela():
     base.columnconfigure(0, weight=1)
     base.rowconfigure(4, weight=1)
 
-    # 1. Seção do Catálogo (Combobox Readonly)
-    ttk.Label(base, text="Selecione o Produto:", font=("Arial", 10, "bold")).grid(row=0, column=0, sticky="w", pady=(0, 4))
+    # 1. Seção do catálogo (Combobox somente para leitura)
+    ttk.Label(base, text="Escolha um item:", font=("Arial", 10, "bold")).grid(row=0, column=0, sticky="w", pady=(0, 4))
     
     # Mapeia as opções para exibir de forma legível na interface
     opcoes_catalogo = [f"[{p.codigo}] {p.nome} - {formatar(p.preco_centavos)}" for p in catalogo.values()]
@@ -42,7 +42,7 @@ def criar_janela():
     frame_qtd.grid(row=2, column=0, sticky="ew", pady=(0, 12))
     frame_qtd.columnconfigure(1, weight=1)
 
-    ttk.Label(frame_qtd, text="Quantidade:").grid(row=0, column=0, sticky="w", padx=(0, 8))
+    ttk.Label(frame_qtd, text="Unidades:").grid(row=0, column=0, sticky="w", padx=(0, 8))
     
     entry_quantidade = ttk.Entry(frame_qtd, width=15)
     entry_quantidade.grid(row=0, column=1, sticky="w")
@@ -53,7 +53,7 @@ def criar_janela():
         # Verifica se há seleção no combobox
         selecao_texto = combo_produto.get()
         if not selecao_texto:
-            aviso.configure(text="Erro: Selecione um produto no catálogo.", foreground="red")
+            aviso.configure(text="Escolha um item do catálogo antes de continuar.", foreground="red")
             return
 
         # Extrai o código do produto com segurança a partir do formato "[Código] Nome - Preço"
@@ -77,7 +77,7 @@ def criar_janela():
             
             # Sucesso: Atualiza listagem e total somente após a operação ser aceita
             atualizar_listagem()
-            aviso.configure(text=f"Sucesso: {produto_escolhido.nome} adicionado(a) ao pedido!", foreground="green")
+            aviso.configure(text=f"{produto_escolhido.nome} incluído na comanda.", foreground="green")
             
             # Redefine o campo de quantidade para o padrão e foca nele
             entry_quantidade.delete(0, tk.END)
@@ -88,7 +88,7 @@ def criar_janela():
             # Erro de validação ou limite: exibe o erro e PRESERVA os itens anteriores intactos
             aviso.configure(text=f"Erro de validação: {e}", foreground="red")
 
-    btn_adicionar = ttk.Button(base, text="Adicionar ao Pedido", command=adicionar_ao_pedido)
+    btn_adicionar = ttk.Button(base, text="Incluir na Comanda", command=adicionar_ao_pedido)
     btn_adicionar.grid(row=3, column=0, sticky="ew", pady=(0, 16))
 
     # 4. Listagem de Itens (Treeview) e Totalizador
@@ -101,7 +101,7 @@ def criar_janela():
     tree_itens = ttk.Treeview(frame_lista, columns=colunas, show="headings", height=6)
     
     tree_itens.heading("codigo", text="Cód")
-    tree_itens.heading("nome", text="Produto")
+    tree_itens.heading("nome", text="Item")
     tree_itens.heading("preco", text="Preço Unit.")
     tree_itens.heading("quantidade", text="Qtd")
     tree_itens.heading("subtotal", text="Subtotal")
@@ -119,11 +119,11 @@ def criar_janela():
     tree_itens.configure(yscrollcommand=scrollbar.set)
 
     # Rótulo de Total Geral
-    label_total = ttk.Label(base, text="Total do Pedido: R$ 0,00", font=("Arial", 11, "bold"))
+    label_total = ttk.Label(base, text="Total da Comanda: R$ 0,00", font=("Arial", 11, "bold"))
     label_total.grid(row=5, column=0, sticky="e", pady=(0, 8))
 
     # 5. Rótulo de Feedback / Mensagens de Status
-    aviso = ttk.Label(base, text="Pronto para iniciar os lançamentos.", wraplength=460, foreground="blue")
+    aviso = ttk.Label(base, text="A comanda está pronta para receber itens.", wraplength=460, foreground="blue")
     aviso.grid(row=6, column=0, sticky="ew", pady=(4, 0))
 
     # Função auxiliar para sincronizar a interface com o modelo de dados
@@ -141,7 +141,7 @@ def criar_janela():
             ))
         
         total_centavos = pedido_atual.total_centavos()
-        label_total.configure(text=f"Total do Pedido: {formatar(total_centavos)}")
+        label_total.configure(text=f"Total da Comanda: {formatar(total_centavos)}")
 
     return janela
 

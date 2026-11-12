@@ -28,12 +28,11 @@ class Produto:
             raise ValueError("Código do produto é obrigatório.")
         if not str(nome).strip():
             raise ValueError("Nome do produto é obrigatório.")
-        if not isinstance(preco_centavos, int) or preco_centavos < 0:
+        if not isinstance(self.preco_centavos, int) or self.preco_centavos < 0:
             raise ValueError("Preço em centavos deve ser um inteiro não negativo.")
             
-        self.codigo = str(codigo).strip()
-        self.nome = str(nome).strip()
-        self.preco_centavos = preco_centavos
+        self.codigo = str(self.codigo).strip()
+        self.nome = str(self.nome).strip()
 
 
 class Pizza(Produto):
@@ -53,8 +52,7 @@ class Item:
     def __init__(self, produto, texto_quantidade):
         if not isinstance(produto, Produto):
             raise ValueError("Objeto produto inválido.")
-        self.produto = produto
-        self.qtd = quantidade(texto_quantidade)
+        self.qtd = quantidade(self.qtd)
 
     def subtotal(self):
         """Retorna o subtotal do item em centavos."""

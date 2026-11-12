@@ -11,12 +11,12 @@ from perfis import SessaoDemo
 
 def criar_janela():
     janela = tk.Tk()
-    janela.title("A14 — Pizzaria & Sorveteria (Produtos em SQLite)")
+    janela.title("A14 — Pizzaria & Sorveteria (Catálogo SQLite)")
     janela.geometry("640x540")
     janela.columnconfigure(0, weight=1)
     janela.rowconfigure(0, weight=1)
 
-    # Definção do banco de dados SQLite fictício local
+    # Localização do banco de dados SQLite desta aplicação
     caminho_db = Path("dados_pizzaria.db").resolve()
     repo = RepositorioSqlite(caminho_db)
 
@@ -30,7 +30,7 @@ def criar_janela():
     base.columnconfigure(0, weight=1)
     base.rowconfigure(1, weight=1)
 
-    # Rótulo superior informativo sobre o banco
+    # Identificação do arquivo de dados
     lbl_banco = ttk.Label(
         base, 
         text=f"Banco SQLite: {caminho_db.name}", 
@@ -49,28 +49,28 @@ def criar_janela():
     aba_produtos = ttk.Frame(notebook, padding=12)
     aba_produtos.columnconfigure(1, weight=1)
     aba_produtos.rowconfigure(3, weight=1)
-    notebook.add(aba_produtos, text=" Cadastro de Produtos ")
+    notebook.add(aba_produtos, text=" Catálogo ")
 
     # Formulário de Entrada
-    ttk.Label(aba_produtos, text="Nome do Produto:").grid(row=0, column=0, sticky="w", pady=4)
+    ttk.Label(aba_produtos, text="Nome do item:").grid(row=0, column=0, sticky="w", pady=4)
     entry_nome = ttk.Entry(aba_produtos)
     entry_nome.grid(row=0, column=1, sticky="ew", padx=(6, 0), pady=4)
     entry_nome.insert(0, "Picolé d'água")
 
-    ttk.Label(aba_produtos, text="Preço Unitário (R$):").grid(row=1, column=0, sticky="w", pady=4)
+    ttk.Label(aba_produtos, text="Preço por unidade (R$):").grid(row=1, column=0, sticky="w", pady=4)
     entry_preco = ttk.Entry(aba_produtos)
     entry_preco.grid(row=1, column=1, sticky="ew", padx=(6, 0), pady=4)
     entry_preco.insert(0, "4,50")
 
-    aviso_produtos = ttk.Label(aba_produtos, text="Preencha os dados e clique em Salvar.", foreground="gray")
+    aviso_produtos = ttk.Label(aba_produtos, text="Informe o item e o preço para cadastrar.", foreground="gray")
     aviso_produtos.grid(row=2, column=0, columnspan=2, sticky="w", pady=6)
 
     # Tabela de Listagem de Produtos (Treeview)
     colunas = ("id", "nome", "preco_centavos")
     tabela_produtos = ttk.Treeview(aba_produtos, columns=colunas, show="headings", height=8)
     tabela_produtos.heading("id", text="ID")
-    tabela_produtos.heading("nome", text="Nome do Produto")
-    tabela_produtos.heading("preco_centavos", text="Preço (Centavos)")
+    tabela_produtos.heading("nome", text="Item do catálogo")
+    tabela_produtos.heading("preco_centavos", text="Preço (centavos)")
 
     tabela_produtos.column("id", width=60, anchor="center")
     tabela_produtos.column("nome", width=280, anchor="w")
@@ -114,7 +114,7 @@ def criar_janela():
             aviso_produtos.configure(text=f"Erro: {e}", foreground="red")
             messagebox.showerror("Falha ao Salvar", f"Não foi possível salvar o produto:\n{e}\n\nSeus dados editados foram mantidos para correção.")
 
-    btn_salvar = ttk.Button(aba_produtos, text="Salvar no Banco (SQLite)", command=salvar_produto)
+    btn_salvar = ttk.Button(aba_produtos, text="Cadastrar no SQLite", command=salvar_produto)
     btn_salvar.grid(row=4, column=0, columnspan=2, sticky="ew", pady=(4, 0))
 
     # Carrega os produtos existentes no banco ao iniciar a janela

@@ -13,7 +13,7 @@ def verificar():
     Executa a bateria de verificações automatizadas da Aula 14 via assert.
     Retorna True apenas se todas as asserções e simulações passarem com sucesso.
     """
-    print("Iniciando verificações da Aula 14 (SQLite e Persistência de Produtos)...")
+    print("Iniciando verificações da Aula 14 (Catálogo e persistência SQLite)...")
 
     # 1. Preservação de casos anteriores (modelos.py)
     assert quantidade(" 3 ") == 3

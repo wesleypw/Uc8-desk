@@ -12,7 +12,7 @@ from tela_produtos import criar_aba_produtos
 
 def criar_janela():
     janela = tk.Tk()
-    janela.title("A15 — Pizzaria & Sorveteria (CRUD Completo)")
+    janela.title("A15 — Pizzaria & Sorveteria (Catálogo e Clientes)")
     janela.geometry("680x580")
     janela.columnconfigure(0, weight=1)
     janela.rowconfigure(0, weight=1)
@@ -41,7 +41,7 @@ def criar_janela():
 
     ttk.Label(
         base,
-        text="Use Tab/Shift+Tab para navegar. Pressione Enter para acionar os botões.",
+        text="Navegue com Tab/Shift+Tab e pressione Enter para ativar um botão.",
         font=("Arial", 8),
         foreground="gray",
     ).grid(row=2, column=0, sticky="w", pady=(8, 0))

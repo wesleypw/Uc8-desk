@@ -5,7 +5,7 @@ def verificar():
     Executa os testes automatizados para Produto, Item e Pedido sem utilizar GUI.
     Retorna True apenas se todas as asserções corretas passarem com sucesso.
     """
-    print("Iniciando verificações da Aula A07 (Sorveteria)...\n")
+    print("Iniciando verificações da Aula A07 (Catálogo e Comandas)...\n")
 
     # 1. Criação de dados fictícios
     # Fruta a 500 centavos (R$ 5,00) e Leite a 750 centavos (R$ 7,50)
@@ -27,7 +27,7 @@ def verificar():
     assert len(linhas) == 2, "O pedido deve conter exatamente 2 linhas de itens."
     assert linhas[0]["subtotal"] == 1000, "Subtotal da fruta incorreto."
     assert linhas[1]["subtotal"] == 2250, "Subtotal do leite incorreto."
-    print("✓ Caso 1 (Duas frutas e três leites) passou com sucesso.")
+    print("[OK] Caso 1 (Duas frutas e três leites) passou com sucesso.")
 
     # 3. Teste de Repetição por Código
     # Adicionar mais 1 unidade da fruta (código 101) deve acumular na mesma linha (total de 3 unidades)
@@ -40,7 +40,7 @@ def verificar():
     assert pedido.total_centavos() == 3750, "Erro ao acumular quantidade com código repetido."
     assert len(pedido.linhas()) == 2, "A repetição de código não deve criar novas linhas de itens."
     assert pedido.itens[101].quantidade == 3, "A quantidade acumulada da fruta deveria ser 3."
-    print("✓ Caso 2 (Repetição de código e acumulação) passou com sucesso.")
+    print("[OK] Caso 2 (Repetição de código e acumulação) passou com sucesso.")
 
     # 4. Teste de Quantidade Inválida e Preservação de Estado
     # Captura o estado do pedido antes do erro
@@ -59,13 +59,13 @@ def verificar():
     # Prova que o pedido anterior foi preservado intacto após a exceção
     assert pedido.total_centavos() == total_antes_do_erro, "O total do pedido mudou após uma falha de validação!"
     assert len(pedido.linhas()) == linhas_antes_do_erro, "O número de itens mudou após a falha!"
-    print("✓ Caso 3 (Quantidade inválida recusada e estado preservado) passou com sucesso.")
+    print("[OK] Caso 3 (Quantidade inválida recusada e estado preservado) passou com sucesso.")
 
     # 5. Isolamento entre Pedidos (Pedido novo deve estar vazio)
     outro_pedido = Pedido()
     assert len(outro_pedido.linhas()) == 0, "Um segundo pedido recém-criado deve estar vazio."
     assert outro_pedido.total_centavos() == 0, "O total de um segundo pedido vazio deve ser 0."
-    print("✓ Caso 4 (Isolamento de novo pedido) passou com sucesso.")
+    print("[OK] Caso 4 (Isolamento de novo pedido) passou com sucesso.")
 
     # 6. Demonstração de Expectativa Deliberadamente Errada (conforme roteiro)
     # Testamos que uma previsão incorreta falha, e em seguida restauramos com a correta.
@@ -77,7 +77,7 @@ def verificar():
         esperimento_falha_capturado = True
 
     assert esperimento_falha_capturado, "Uma asserção falsa deve falhar obrigatoriamente."
-    print("✓ Caso 5 (Expectativa falsa testada, falhou conforme previsto e o sistema foi preservado) passou com sucesso.")
+    print("[OK] Caso 5 (Expectativa falsa testada, falhou conforme previsto e o sistema foi preservado) passou com sucesso.")
 
     print("\nTodas as verificações foram concluídas com êxito!")
     return True

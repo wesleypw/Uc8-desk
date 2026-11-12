@@ -8,9 +8,9 @@ def criar_aba_clientes(notebook, repo: RepositorioSqlite):
     aba_clientes = ttk.Frame(notebook, padding=12)
     aba_clientes.columnconfigure(1, weight=1)
     aba_clientes.rowconfigure(2, weight=1)
-    notebook.add(aba_clientes, text=" Gestão de Clientes ")
+    notebook.add(aba_clientes, text=" Clientes ")
 
-    ttk.Label(aba_clientes, text="Nome do Cliente:").grid(
+    ttk.Label(aba_clientes, text="Nome da pessoa cliente:").grid(
         row=0, column=0, sticky="w", pady=4
     )
     entry_nome_cli = ttk.Entry(aba_clientes)
@@ -50,7 +50,7 @@ def criar_aba_clientes(notebook, repo: RepositorioSqlite):
             )
 
     ttk.Button(
-        aba_clientes, text="Cadastrar Cliente", command=salvar_cliente
+        aba_clientes, text="Adicionar cliente", command=salvar_cliente
     ).grid(row=1, column=0, columnspan=2, sticky="ew", pady=4)
 
     atualizar_listagem_clientes()

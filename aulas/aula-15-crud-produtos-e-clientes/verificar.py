@@ -13,7 +13,7 @@ def verificar():
     Executa a bateria de verificações automatizadas da Aula 15 via assert.
     Retorna True apenas se todas as asserções e simulações de CRUD passarem com sucesso.
     """
-    print("Iniciando verificações da Aula 15 (CRUD de Produtos e Início de Clientes)...")
+    print("Iniciando verificações da Aula 15 (Catálogo e cadastro de clientes)...")
 
     # 1. Preservação de casos anteriores (modelos.py)
     assert quantidade(" 5 ") == 5
