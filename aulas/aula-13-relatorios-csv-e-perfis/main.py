@@ -39,7 +39,7 @@ def criar_janela():
 
     ttk.Label(frame_perfil, text="Usuário:").grid(row=0, column=0, sticky="w", padx=4)
     entry_nome = ttk.Entry(frame_perfil)
-    entry_nome.insert(0, "Operador Caixa")
+    entry_nome.insert(0, "empacotaor")
     entry_nome.grid(row=0, column=1, sticky="ew", padx=4)
 
     ttk.Label(frame_perfil, text="Perfil:").grid(row=1, column=0, sticky="w", padx=4, pady=4)

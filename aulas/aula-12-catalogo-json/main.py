@@ -12,7 +12,7 @@ import pagamento
 class AplicacaoMercado:
     def __init__(self, janela):
         self.janela = janela
-        self.janela.title("A12 — Mercado: Navegação e Catálogo JSON")
+        self.janela.title("A12 — Mercado: Navegação e Catálogo")
         self.janela.geometry("700x550")
         self.janela.columnconfigure(0, weight=1)
         self.janela.rowconfigure(0, weight=1)

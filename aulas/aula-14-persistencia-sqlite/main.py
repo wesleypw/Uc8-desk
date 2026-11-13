@@ -55,12 +55,12 @@ def criar_janela():
     ttk.Label(aba_produtos, text="Nome do item:").grid(row=0, column=0, sticky="w", pady=4)
     entry_nome = ttk.Entry(aba_produtos)
     entry_nome.grid(row=0, column=1, sticky="ew", padx=(6, 0), pady=4)
-    entry_nome.insert(0, "Picolé d'água")
+    entry_nome.insert(0, "suco de alface")
 
     ttk.Label(aba_produtos, text="Preço por unidade (R$):").grid(row=1, column=0, sticky="w", pady=4)
     entry_preco = ttk.Entry(aba_produtos)
     entry_preco.grid(row=1, column=1, sticky="ew", padx=(6, 0), pady=4)
-    entry_preco.insert(0, "4,50")
+    entry_preco.insert(0, "1,99")
 
     aviso_produtos = ttk.Label(aba_produtos, text="Informe o item e o preço para cadastrar.", foreground="gray")
     aviso_produtos.grid(row=2, column=0, columnspan=2, sticky="w", pady=6)
