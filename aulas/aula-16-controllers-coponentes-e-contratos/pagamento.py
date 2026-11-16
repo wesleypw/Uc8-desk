@@ -1,4 +1,4 @@
-# A15: assinaturas de apoio; traga sua implementação anterior.
+# A16: módulo reaproveitado da A15 (versão testada).
 
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 import re

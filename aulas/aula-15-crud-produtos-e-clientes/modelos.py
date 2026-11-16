@@ -1,4 +1,4 @@
-# A15: assinaturas de apoio; traga sua implementação anterior.
+# CORREÇÃO da A15: use este modelos.py no lugar do da A15 (a versão da A15 usava self.preco_centavos e self.qtd antes de atribuir).
 
 def quantidade(texto):
     """Converte e valida o texto de quantidade para inteiro positivo (> 0)."""
@@ -28,11 +28,12 @@ class Produto:
             raise ValueError("Código do produto é obrigatório.")
         if not str(nome).strip():
             raise ValueError("Nome do produto é obrigatório.")
-        if not isinstance(self.preco_centavos, int) or self.preco_centavos < 0:
+        if not isinstance(preco_centavos, int) or preco_centavos < 0:
             raise ValueError("Preço em centavos deve ser um inteiro não negativo.")
             
-        self.codigo = str(self.codigo).strip()
-        self.nome = str(self.nome).strip()
+        self.codigo = str(codigo).strip()
+        self.nome = str(nome).strip()
+        self.preco_centavos = preco_centavos
 
 
 class Pizza(Produto):
@@ -52,7 +53,8 @@ class Item:
     def __init__(self, produto, texto_quantidade):
         if not isinstance(produto, Produto):
             raise ValueError("Objeto produto inválido.")
-        self.qtd = quantidade(self.qtd)
+        self.produto = produto
+        self.qtd = quantidade(texto_quantidade)
 
     def subtotal(self):
         """Retorna o subtotal do item em centavos."""
