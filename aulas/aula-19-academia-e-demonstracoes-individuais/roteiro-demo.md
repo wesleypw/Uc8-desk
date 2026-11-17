@@ -1,6 +1,6 @@
 # Minha demonstração individual — A19
 
-> Tudo o que está descrito abaixo foi **executado** nesta pasta (Python 3.12.3, Linux). Onde aparece
+> Tudo o que está descrito abaixo foi **executado** nesta pasta (Python 3.12.3). Onde aparece
 > **[PREENCHER]**, o texto precisa da sua voz ou de algo que só você observa na sua máquina.
 
 ## Demonstração do fluxo
