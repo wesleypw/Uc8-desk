@@ -19,6 +19,7 @@ class PainelVenda(ttk.Frame):
         self.ids_clientes = []   # posição do Combobox -> ID (o ID é o alvo, nunca o texto)
         self.ids_produtos = []
         self.finalizada = False
+        self.janela_vendas = None
 
         self.columnconfigure(1, weight=1)
         self.rowconfigure(3, weight=1)
@@ -27,7 +28,9 @@ class PainelVenda(ttk.Frame):
         ttk.Label(self, text="Cliente:").grid(row=0, column=0, sticky="w", pady=4)
         self.combo_cliente = ttk.Combobox(self, state="readonly")
         self.combo_cliente.grid(row=0, column=1, sticky="ew", padx=(6, 6), pady=4)
-        self.btn_atualizar = ttk.Button(self, text="Atualizar listas", command=self.atualizar_listas)
+        self.btn_atualizar = ttk.Button(
+            self, text="Atualizar vendas", command=self.atualizar_vendas
+        )
         self.btn_atualizar.grid(row=0, column=2, sticky="e", pady=4)
 
         # --- produto + quantidade ---
@@ -111,6 +114,75 @@ class PainelVenda(ttk.Frame):
         self.combo_produto["values"] = [f"{p['id']} — {p['nome']} ({formatar(p['preco_centavos'])})" for p in produtos]
         self._restaurar(self.combo_cliente, self.ids_clientes, cliente_antes)
         self._restaurar(self.combo_produto, self.ids_produtos, produto_antes)
+
+    def atualizar_vendas(self):
+        try:
+            self.atualizar_listas()
+            vendas = self.controller.vendas()
+        except Exception as erro:
+            self.dialogos.erro("Não foi possível carregar as vendas", str(erro))
+            self._mensagem(f"Erro: {erro}", "red")
+            return False
+
+        if self.janela_vendas is None or not self.janela_vendas.winfo_exists():
+            self.janela_vendas = tk.Toplevel(self)
+            self.janela_vendas.title("Vendas registradas")
+            self.janela_vendas.geometry("900x360")
+            self.janela_vendas.transient(self.winfo_toplevel())
+            self.janela_vendas.columnconfigure(0, weight=1)
+            self.janela_vendas.rowconfigure(1, weight=1)
+
+            self.lbl_resumo_vendas = ttk.Label(self.janela_vendas, padding=(8, 8))
+            self.lbl_resumo_vendas.grid(row=0, column=0, sticky="w")
+            quadro_vendas = ttk.Frame(self.janela_vendas, padding=(8, 0, 8, 8))
+            quadro_vendas.grid(row=1, column=0, sticky="nsew")
+            quadro_vendas.columnconfigure(0, weight=1)
+            quadro_vendas.rowconfigure(0, weight=1)
+            colunas = ("id", "data", "cliente", "pagamento", "itens", "total")
+            self.tabela_vendas = ttk.Treeview(
+                quadro_vendas, columns=colunas, show="headings", height=10
+            )
+            for chave, titulo, largura, ancora, estica in (
+                ("id", "Venda", 60, "center", False),
+                ("data", "Data e hora", 145, "w", False),
+                ("cliente", "Cliente", 150, "w", True),
+                ("pagamento", "Pagamento", 100, "center", False),
+                ("itens", "Itens", 280, "w", True),
+                ("total", "Total", 100, "e", False),
+            ):
+                self.tabela_vendas.heading(chave, text=titulo)
+                self.tabela_vendas.column(
+                    chave, width=largura, anchor=ancora, stretch=estica
+                )
+            self.tabela_vendas.grid(row=0, column=0, sticky="nsew")
+            rolagem_vendas = ttk.Scrollbar(
+                quadro_vendas, orient="vertical", command=self.tabela_vendas.yview
+            )
+            self.tabela_vendas.configure(yscrollcommand=rolagem_vendas.set)
+            rolagem_vendas.grid(row=0, column=1, sticky="ns")
+
+        for iid in self.tabela_vendas.get_children():
+            self.tabela_vendas.delete(iid)
+        for venda in vendas:
+            itens = ", ".join(
+                f"{item['quantidade']}x {item['nome']}" for item in venda["itens"]
+            )
+            self.tabela_vendas.insert("", "end", values=(
+                venda["id"],
+                venda["criado_em"].replace("T", " "),
+                venda["cliente"],
+                venda["forma"],
+                itens,
+                formatar(venda["total_centavos"]),
+            ))
+        self.lbl_resumo_vendas.configure(
+            text=f"{len(vendas)} venda(s) registrada(s)." if vendas
+            else "Nenhuma venda registrada."
+        )
+        self.janela_vendas.deiconify()
+        self.janela_vendas.lift()
+        self._mensagem(f"Lista de vendas atualizada: {len(vendas)} venda(s).", "green")
+        return True
 
     @staticmethod
     def _id_escolhido(combo, ids):

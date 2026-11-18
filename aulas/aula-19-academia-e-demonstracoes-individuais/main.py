@@ -3,12 +3,16 @@
 Execução (na pasta deste arquivo):
     python main.py                       # usa dados_sorveteria.db ao lado do main.py
     python main.py --banco ensaio.db     # usa outro arquivo (ex.: cópia de ensaio)
+
+Se copia-nova.db estiver aberta em outro programa, a interface ainda inicia, mas o backup
+automático fica pausado até fechar esse arquivo e reiniciar o aplicativo.
 """
 import sys
 import tkinter as tk
 from pathlib import Path
 from tkinter import ttk
 
+from backup_sqlite import criar_backup
 from componentes import criar_painel_clientes, criar_painel_produtos
 from controller import CadastroController, VendaController
 from repositorio import RepositorioSqlite
@@ -29,15 +33,27 @@ def caminho_do_banco(argumentos):
 
 def criar_janela(repositorio=None, dialogos=None, caminho_banco=None):
     janela = tk.Tk()
-    janela.title("A17 — Sorveteria integrada")
+    janela.title("Sorveteria — Vendas e cadastros")
     janela.geometry("720x640")
     janela.columnconfigure(0, weight=1)
     janela.rowconfigure(0, weight=1)
+    aviso_backup = None
 
     if repositorio is None:
         caminho_banco = Path(caminho_banco or caminho_do_banco([])).resolve()
+        caminho_copia = caminho_banco.with_name("copia-nova.db")
         repositorio = RepositorioSqlite(caminho_banco)
-    descricao = Path(caminho_banco).name if caminho_banco else "repositório informado"
+        try:
+            criar_backup(caminho_banco, caminho_copia)
+        except PermissionError:
+            aviso_backup = (
+                "Backup automático pausado: feche copia-nova.db e reinicie o aplicativo."
+            )
+        else:
+            repositorio.caminho_backup = str(caminho_copia.resolve())
+    elif caminho_banco is None:
+        caminho_banco = getattr(repositorio, "caminho", None)
+    descricao = Path(caminho_banco).name if caminho_banco else "configurado externamente"
 
     cadastro = CadastroController(repositorio)
     venda = VendaController(repositorio)
@@ -45,12 +61,23 @@ def criar_janela(repositorio=None, dialogos=None, caminho_banco=None):
     base = ttk.Frame(janela, padding=10)
     base.grid(row=0, column=0, sticky="nsew")
     base.columnconfigure(0, weight=1)
-    base.rowconfigure(1, weight=1)
-    ttk.Label(base, text=f"Banco SQLite: {descricao} (cadastros e vendas persistem; a montagem fica em memória)",
-              font=("Arial", 9, "italic"), foreground="gray").grid(row=0, column=0, sticky="w", pady=(0, 6))
+
+    ttk.Label(
+        base,
+        text=f"Gestão da sorveteria  |  Banco ativo: {descricao}",
+        font=("Arial", 11, "bold"),
+    ).grid(row=0, column=0, sticky="w", pady=(0, 8))
+
+    linha_notebook = 1
+    if aviso_backup:
+        ttk.Label(base, text=aviso_backup, foreground="darkorange").grid(
+            row=1, column=0, sticky="w", pady=(0, 6)
+        )
+        linha_notebook = 2
+    base.rowconfigure(linha_notebook, weight=1)
 
     notebook = ttk.Notebook(base)
-    notebook.grid(row=1, column=0, sticky="nsew")
+    notebook.grid(row=linha_notebook, column=0, sticky="nsew")
     painel_venda = PainelVenda(notebook, venda, dialogos)
     painel_produtos = criar_painel_produtos(notebook, cadastro, dialogos)
     painel_clientes = criar_painel_clientes(notebook, cadastro, dialogos)
@@ -65,8 +92,10 @@ def criar_janela(repositorio=None, dialogos=None, caminho_banco=None):
 
     notebook.bind("<<NotebookTabChanged>>", ao_trocar_de_aba)
 
-    ttk.Label(base, text="Tab/Shift+Tab navegam; Espaço aciona o botão em foco; Enter nos campos adiciona/salva.",
-              font=("Arial", 8), foreground="gray").grid(row=2, column=0, sticky="w", pady=(8, 0))
+    ttk.Label(base, text="Atalhos: Tab/Shift+Tab navegam; Espaço aciona botões; Enter adiciona item ou salva cadastro.",
+              font=("Arial", 8), foreground="gray").grid(
+                  row=linha_notebook + 1, column=0, sticky="w", pady=(8, 0)
+              )
 
     janela.notebook = notebook
     janela.paineis = {"venda": painel_venda, "produto": painel_produtos, "cliente": painel_clientes}

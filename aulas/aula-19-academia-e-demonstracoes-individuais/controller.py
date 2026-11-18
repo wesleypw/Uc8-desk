@@ -86,6 +86,9 @@ class VendaController:
     def produtos(self):
         return self.repositorio.listar_produtos()
 
+    def vendas(self):
+        return self.repositorio.listar_vendas()
+
     def _produto_atual(self, produto_id):
         codigo = validar_id(produto_id)
         for registro in self.repositorio.listar_produtos():

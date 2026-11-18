@@ -105,19 +105,23 @@ def t04_mapa_da_academia():
 
 
 # ---------------------------------------------------------------- T05
-def t05_destino_novo_sem_sobrescrever():
+def t05_atualiza_destino_existente():
     with tempfile.TemporaryDirectory() as tmp:
         origem, _ = banco_de_ensaio(tmp)
         primeira = Path(tmp) / "copia-1.db"
         backup_sqlite.criar_backup(origem, primeira)
         assinatura = sha(primeira)
-        mensagem = recusa(FileExistsError, backup_sqlite.criar_backup, origem, primeira)
-        assert "não será sobrescrito" in mensagem
-        conferir("cópia anterior intacta", sha(primeira), assinatura)
-        segunda = Path(tmp) / "copia-2.db"                       # correção: destino novo
-        assert backup_sqlite.criar_backup(origem, segunda) == segunda and segunda.exists()
-        conferir("a primeira continua igual", sha(primeira), assinatura)
-    print("T05 ok — destino existente é recusado e a cópia anterior fica byte a byte igual; destino novo funciona")
+        repo = RepositorioSqlite(origem)
+        repo.adicionar_cliente("Davi fictício")
+        assert backup_sqlite.criar_backup(origem, primeira) == primeira
+        assert sha(primeira) != assinatura, "o backup existente deve receber as alterações da origem"
+        conferir("clientes depois da atualização",
+                 backup_sqlite.consultar_copia(primeira, "SELECT count(*) FROM clientes"), [(3,)])
+        conferir("integridade depois da atualização",
+                 backup_sqlite.consultar_copia(primeira, "PRAGMA integrity_check"), [("ok",)])
+        recusa(ValueError, backup_sqlite.criar_backup, origem, origem)
+        conferir("origem não foi substituída", len(repo.listar_clientes()), 3)
+    print("T05 ok — repetir o backup atualiza a mesma cópia; a nova cópia passa na integridade")
 
 
 # ---------------------------------------------------------------- T06
@@ -183,18 +187,52 @@ def t08_entrega_limpa_e_limites():
     print("T08 ok — entrega sem .db/.pyc/__pycache__/.venv/.git/.env; arquivos da aula presentes; limites documentados")
 
 
+# ---------------------------------------------------------------- T09
+def t09_copia_automatica():
+    with tempfile.TemporaryDirectory() as tmp:
+        origem = Path(tmp) / "dados_sorveteria.db"
+        copia = Path(tmp) / "copia-nova.db"
+        repo = RepositorioSqlite(origem, copia)
+        conferir("cópia inicial", backup_sqlite.consultar_copia(copia, "PRAGMA integrity_check"), [("ok",)])
+
+        cliente = repo.adicionar_cliente("Lia")
+        produto = repo.adicionar_produto("Casquinha", "6,50")
+        conferir("cadastros copiados", backup_sqlite.consultar_copia(
+            copia, "SELECT nome FROM clientes"), [("Lia",)])
+        conferir("produto copiado", backup_sqlite.consultar_copia(
+            copia, "SELECT nome, preco_centavos FROM produtos"), [("Casquinha", 650)])
+
+        repo.editar_cliente(cliente, "Lia atualizada")
+        repo.editar_produto(produto, "Casquinha grande", "8,00")
+        conferir("edições copiadas", backup_sqlite.consultar_copia(
+            copia, "SELECT nome FROM clientes"), [("Lia atualizada",)])
+        conferir("edição de produto copiada", backup_sqlite.consultar_copia(
+            copia, "SELECT nome, preco_centavos FROM produtos"), [("Casquinha grande", 800)])
+
+        venda = repo.registrar_venda(cliente, [
+            {"produto_id": produto, "quantidade": 2, "preco_centavos": 800}
+        ], "PIX")
+        conferir("venda copiada", backup_sqlite.consultar_copia(
+            copia, "SELECT id, forma, total_centavos FROM vendas"), [(venda, "PIX", 1392)])
+        conferir("item de venda copiado", backup_sqlite.consultar_copia(
+            copia, "SELECT venda_id, produto_id, quantidade FROM itens_venda"),
+            [(venda, produto, 2)])
+        conferir("integridade final", backup_sqlite.consultar_copia(copia, "PRAGMA integrity_check"), [("ok",)])
+    print("T09 ok — alterações de clientes, produtos e vendas atualizam automaticamente copia-nova.db")
+
+
 # ---------------------------------------------------------------- extras
 def t_extras_backup():
-    """Erro depois de válido, limite (banco vazio/arquivo inválido) e correção com nova execução."""
+    """Falha na origem preserva o backup existente; bancos inválidos e vazios são tratados."""
     with tempfile.TemporaryDirectory() as tmp:
         origem, _ = banco_de_ensaio(tmp)
         valido = backup_sqlite.criar_backup(origem, Path(tmp) / "ok.db")                         # válido
-        recusa(FileExistsError, backup_sqlite.criar_backup, origem, valido)                      # erro depois do válido
         texto = Path(tmp) / "nao-e-banco.db"
         texto.write_text("isto não é um banco SQLite" * 20, encoding="utf-8")
         assinatura = sha(texto)
-        recusa(sqlite3.DatabaseError, backup_sqlite.criar_backup, texto, Path(tmp) / "falha.db")  # origem inválida
-        assert not (Path(tmp) / "falha.db").exists(), "cópia parcial não pode sobrar"
+        assinatura_backup = sha(valido)
+        recusa(sqlite3.DatabaseError, backup_sqlite.criar_backup, texto, valido)                   # origem inválida
+        conferir("backup válido preservado após erro", sha(valido), assinatura_backup)
         conferir("origem inválida intacta", sha(texto), assinatura)
         vazio = Path(tmp) / "vazio.db"                                                           # limite: banco sem tabelas
         with closing(sqlite3.connect(vazio)):
@@ -202,16 +240,26 @@ def t_extras_backup():
         copia_vazia = backup_sqlite.criar_backup(vazio, Path(tmp) / "copia-vazia.db")
         conferir("resumo do vazio", backup_sqlite.resumo_da_copia(copia_vazia), {})
         assert backup_sqlite.criar_backup(origem, Path(tmp) / "ok-de-novo.db").exists()         # correção: nome novo
-    print("Extras ok — válido, recusa, origem inválida sem sobra, banco vazio e correção com novo destino")
+        assinatura_origem = sha(origem)
+        assinatura_copia = sha(valido)
+        assert not backup_sqlite.sincronizar_backup(origem, valido)
+        conferir("cópia idêntica não foi regravada", sha(valido), assinatura_copia)
+        RepositorioSqlite(origem).adicionar_cliente("Davi fictício")
+        assert backup_sqlite.sincronizar_backup(origem, valido)
+        conferir("cópia diferente atualizada", backup_sqlite.consultar_copia(
+            valido, "SELECT count(*) FROM clientes"), [(3,)])
+        assert sha(origem) != assinatura_origem
+    print("Extras ok — erro preserva backup existente; origem inválida e banco vazio tratados")
 
 
 def verificar():
     t01_t02_demonstracao()
     t04_mapa_da_academia()
-    t05_destino_novo_sem_sobrescrever()
+    t05_atualiza_destino_existente()
     t06_origem_ausente()
     t07_copia_confere()
     t08_entrega_limpa_e_limites()
+    t09_copia_automatica()
     t_extras_backup()
     print("Não verificado por script (precisa de pessoa):")
     for caso, texto in PENDENCIAS_HUMANAS.items():

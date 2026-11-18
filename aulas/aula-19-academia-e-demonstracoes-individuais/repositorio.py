@@ -1,10 +1,11 @@
 # A19 (candidata validada na A18): repositório da A16 + vendas gravadas em transação (venda e itens juntos).
 
-from contextlib import closing
+from contextlib import closing, contextmanager
 from datetime import datetime
 from pathlib import Path
 import sqlite3
 
+from backup_sqlite import sincronizar_backup
 from pagamento import FATORES, calcular_pagamento, preco_para_centavos
 
 
@@ -49,10 +50,13 @@ def validar_preco(preco):
 class RepositorioSqlite:
     """Repositório de persistência de dados utilizando SQLite (CRUD completo)."""
 
-    def __init__(self, caminho):
+    def __init__(self, caminho, caminho_backup=None):
         if not caminho:
             raise ValueError("O caminho do banco de dados é obrigatório.")
         self.caminho = str(Path(caminho).resolve())
+        self.caminho_backup = str(Path(caminho_backup).resolve()) if caminho_backup else None
+        if self.caminho_backup == self.caminho:
+            raise ValueError("O banco principal e a cópia não podem ser o mesmo arquivo.")
         self.iniciar()
 
     def conectar(self):
@@ -61,48 +65,55 @@ class RepositorioSqlite:
         con.execute("PRAGMA foreign_keys = ON")
         return con
 
-    def iniciar(self):
-        """Cria as tabelas 'produtos' e 'clientes' caso ainda não existam."""
+    @contextmanager
+    def transacao(self):
+        """Confirma a transação e, se configurada, sincroniza a cópia do banco."""
         with closing(self.conectar()) as con:
             with con:
-                con.execute("""
-                    CREATE TABLE IF NOT EXISTS produtos (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        nome TEXT NOT NULL,
-                        preco_centavos INTEGER NOT NULL
-                    )
-                """)
-                con.execute("""
-                    CREATE TABLE IF NOT EXISTS clientes (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        nome TEXT NOT NULL
-                    )
-                """)
+                yield con
+        if self.caminho_backup:
+            sincronizar_backup(self.caminho, self.caminho_backup)
+
+    def iniciar(self):
+        """Cria as tabelas 'produtos' e 'clientes' caso ainda não existam."""
+        with self.transacao() as con:
+            con.execute("""
+                CREATE TABLE IF NOT EXISTS produtos (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    nome TEXT NOT NULL,
+                    preco_centavos INTEGER NOT NULL
+                )
+            """)
+            con.execute("""
+                CREATE TABLE IF NOT EXISTS clientes (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    nome TEXT NOT NULL
+                )
+            """)
         self.iniciar_vendas()
 
     def iniciar_vendas(self):
         """Cria 'vendas' e 'itens_venda'; os vínculos por ID são conferidos pelo próprio banco."""
-        with closing(self.conectar()) as con:
-            with con:
-                con.execute("""
-                    CREATE TABLE IF NOT EXISTS vendas (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        cliente_id INTEGER NOT NULL REFERENCES clientes(id),
-                        forma TEXT NOT NULL,
-                        subtotal_centavos INTEGER NOT NULL CHECK (subtotal_centavos > 0),
-                        total_centavos INTEGER NOT NULL CHECK (total_centavos > 0),
-                        criado_em TEXT NOT NULL
-                    )
-                """)
-                con.execute("""
-                    CREATE TABLE IF NOT EXISTS itens_venda (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        venda_id INTEGER NOT NULL REFERENCES vendas(id),
-                        produto_id INTEGER NOT NULL REFERENCES produtos(id),
-                        quantidade INTEGER NOT NULL CHECK (quantidade > 0),
-                        preco_centavos INTEGER NOT NULL CHECK (preco_centavos > 0)
-                    )
-                """)
+        with self.transacao() as con:
+            con.execute("""
+                CREATE TABLE IF NOT EXISTS vendas (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    cliente_id INTEGER NOT NULL REFERENCES clientes(id),
+                    forma TEXT NOT NULL,
+                    subtotal_centavos INTEGER NOT NULL CHECK (subtotal_centavos > 0),
+                    total_centavos INTEGER NOT NULL CHECK (total_centavos > 0),
+                    criado_em TEXT NOT NULL
+                )
+            """)
+            con.execute("""
+                CREATE TABLE IF NOT EXISTS itens_venda (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    venda_id INTEGER NOT NULL REFERENCES vendas(id),
+                    produto_id INTEGER NOT NULL REFERENCES produtos(id),
+                    quantidade INTEGER NOT NULL CHECK (quantidade > 0),
+                    preco_centavos INTEGER NOT NULL CHECK (preco_centavos > 0)
+                )
+            """)
 
     def adicionar_produto(self, nome, preco):
         """
@@ -112,13 +123,13 @@ class RepositorioSqlite:
         nome_validado = validar_nome(nome)
         preco_centavos = validar_preco(preco)
 
-        with closing(self.conectar()) as con:
-            with con:
-                cursor = con.execute(
-                    "INSERT INTO produtos (nome, preco_centavos) VALUES (?, ?)",
-                    (nome_validado, preco_centavos)
-                )
-                return cursor.lastrowid
+        with self.transacao() as con:
+            cursor = con.execute(
+                "INSERT INTO produtos (nome, preco_centavos) VALUES (?, ?)",
+                (nome_validado, preco_centavos)
+            )
+            produto_id = cursor.lastrowid
+        return produto_id
 
     def listar_produtos(self):
         """Retorna a lista de todos os produtos como dicionários."""
@@ -139,14 +150,13 @@ class RepositorioSqlite:
         nome_validado = validar_nome(nome)
         preco_centavos = validar_preco(preco)
 
-        with closing(self.conectar()) as con:
-            with con:
-                cursor = con.execute(
-                    "UPDATE produtos SET nome = ?, preco_centavos = ? WHERE id = ?",
-                    (nome_validado, preco_centavos, id_valido)
-                )
-                if cursor.rowcount == 0:
-                    raise ValueError(f"Produto com ID {id_valido} não encontrado para edição.")
+        with self.transacao() as con:
+            cursor = con.execute(
+                "UPDATE produtos SET nome = ?, preco_centavos = ? WHERE id = ?",
+                (nome_validado, preco_centavos, id_valido)
+            )
+            if cursor.rowcount == 0:
+                raise ValueError(f"Produto com ID {id_valido} não encontrado para edição.")
         return True
 
     def excluir_produto(self, codigo, confirmado=False):
@@ -158,14 +168,13 @@ class RepositorioSqlite:
             raise ValueError("A exclusão deve ser explicitamente confirmada.")
 
         try:
-            with closing(self.conectar()) as con:
-                with con:
-                    cursor = con.execute(
-                        "DELETE FROM produtos WHERE id = ?",
-                        (id_valido,)
-                    )
-                    if cursor.rowcount == 0:
-                        raise ValueError(f"Produto com ID {id_valido} não encontrado para exclusão.")
+            with self.transacao() as con:
+                cursor = con.execute(
+                    "DELETE FROM produtos WHERE id = ?",
+                    (id_valido,)
+                )
+                if cursor.rowcount == 0:
+                    raise ValueError(f"Produto com ID {id_valido} não encontrado para exclusão.")
         except sqlite3.IntegrityError:
             raise ValueError(
                 f"Produto ID {id_valido} está vinculado a vendas e não pode ser excluído."
@@ -175,13 +184,13 @@ class RepositorioSqlite:
     def adicionar_cliente(self, nome):
         """Insere um cliente no banco utilizando consulta parametrizada. Retorna o ID gerado."""
         nome_validado = validar_nome(nome)
-        with closing(self.conectar()) as con:
-            with con:
-                cursor = con.execute(
-                    "INSERT INTO clientes (nome) VALUES (?)",
-                    (nome_validado,)
-                )
-                return cursor.lastrowid
+        with self.transacao() as con:
+            cursor = con.execute(
+                "INSERT INTO clientes (nome) VALUES (?)",
+                (nome_validado,)
+            )
+            cliente_id = cursor.lastrowid
+        return cliente_id
 
     def listar_clientes(self):
         """Retorna a lista de clientes cadastrados como dicionários."""
@@ -198,14 +207,13 @@ class RepositorioSqlite:
         id_valido = validar_id(codigo)
         nome_validado = validar_nome(nome)
 
-        with closing(self.conectar()) as con:
-            with con:
-                cursor = con.execute(
-                    "UPDATE clientes SET nome = ? WHERE id = ?",
-                    (nome_validado, id_valido)
-                )
-                if cursor.rowcount == 0:
-                    raise ValueError(f"Cliente com ID {id_valido} não encontrado para edição.")
+        with self.transacao() as con:
+            cursor = con.execute(
+                "UPDATE clientes SET nome = ? WHERE id = ?",
+                (nome_validado, id_valido)
+            )
+            if cursor.rowcount == 0:
+                raise ValueError(f"Cliente com ID {id_valido} não encontrado para edição.")
         return True
 
     def excluir_cliente(self, codigo, confirmado=False):
@@ -215,14 +223,13 @@ class RepositorioSqlite:
             raise ValueError("A exclusão deve ser explicitamente confirmada.")
 
         try:
-            with closing(self.conectar()) as con:
-                with con:
-                    cursor = con.execute(
-                        "DELETE FROM clientes WHERE id = ?",
-                        (id_valido,)
-                    )
-                    if cursor.rowcount == 0:
-                        raise ValueError(f"Cliente com ID {id_valido} não encontrado para exclusão.")
+            with self.transacao() as con:
+                cursor = con.execute(
+                    "DELETE FROM clientes WHERE id = ?",
+                    (id_valido,)
+                )
+                if cursor.rowcount == 0:
+                    raise ValueError(f"Cliente com ID {id_valido} não encontrado para exclusão.")
         except sqlite3.IntegrityError:
             raise ValueError(
                 f"Cliente ID {id_valido} está vinculado a vendas e não pode ser excluído."
@@ -259,19 +266,18 @@ class RepositorioSqlite:
         agora = datetime.now().isoformat(timespec="seconds")
 
         try:
-            with closing(self.conectar()) as con:
-                with con:  # commit se terminar bem; rollback se qualquer exceção sair daqui
-                    venda_id = con.execute(
-                        "INSERT INTO vendas (cliente_id, forma, subtotal_centavos, total_centavos, criado_em) "
-                        "VALUES (?, ?, ?, ?, ?)",
-                        (cliente, forma, subtotal, total, agora),
-                    ).lastrowid
-                    for produto_id, quantidade, preco in linhas:
-                        con.execute(
-                            "INSERT INTO itens_venda (venda_id, produto_id, quantidade, preco_centavos) "
-                            "VALUES (?, ?, ?, ?)",
-                            (venda_id, produto_id, quantidade, preco),
-                        )
+            with self.transacao() as con:
+                venda_id = con.execute(
+                    "INSERT INTO vendas (cliente_id, forma, subtotal_centavos, total_centavos, criado_em) "
+                    "VALUES (?, ?, ?, ?, ?)",
+                    (cliente, forma, subtotal, total, agora),
+                ).lastrowid
+                for produto_id, quantidade, preco in linhas:
+                    con.execute(
+                        "INSERT INTO itens_venda (venda_id, produto_id, quantidade, preco_centavos) "
+                        "VALUES (?, ?, ?, ?)",
+                        (venda_id, produto_id, quantidade, preco),
+                    )
         except sqlite3.IntegrityError as erro:
             raise ValueError(
                 "Cliente ou produto da venda não existe mais; a venda foi desfeita por completo."

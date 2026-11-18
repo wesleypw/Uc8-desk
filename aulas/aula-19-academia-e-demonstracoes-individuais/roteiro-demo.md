@@ -42,8 +42,9 @@ corrigir só o nome de Lia não exige outro ID, porque o vínculo usa `aluno_id 
 O que não pude afirmar somente pelo README: que existam janelas, banco de dados ou arquivos reais na academia — a amostra não tem Tkinter, SQLite nem leitura/escrita de arquivo, e não é o sistema original completo.
 
 ## Backup em cópia
-Origem e destino novo: `python backup_sqlite.py origem-ficticia.db copia-nova.db` (use uma pasta de ensaio). A origem precisa existir e o destino não pode existir.
-Recusas observadas: destino já existente → "O destino já existe e não será sobrescrito" (a cópia anterior fica byte a byte igual); origem ausente → "Banco de origem não encontrado" (nenhum arquivo é criado).
-Consulta de dados conhecidos na cópia: por outra conexão, `PRAGMA integrity_check` → `ok`; `SELECT id, nome FROM clientes WHERE id = 2` → `(2, 'Rui fictício')`;
-com um 3º cliente adicionado **antes** do backup, a cópia tem 3 clientes e a venda 1 (PIX, 1131); um 4º cliente adicionado **depois** só aparece na origem.
+Ao abrir o programa, `dados_sorveteria.db` e `copia-nova.db` ficam lado a lado. Cada cadastro, edição, exclusão ou venda confirmada atualiza a cópia automaticamente depois do commit da transação. Se a execução usar `--banco CAMINHO.db`, `copia-nova.db` fica na mesma pasta desse banco.
+Também é possível executar `python backup_sqlite.py`: o script compara o banco padrão com `copia-nova.db` e só atualiza a cópia se estiver ausente ou diferente. Para indicar outros bancos, use `python backup_sqlite.py origem.db copia.db`.
+Segurança da atualização: a nova cópia é criada em arquivo temporário e verificada antes de substituir o destino. Se a origem não existir ou ocorrer uma falha, o backup anterior permanece intacto. A origem nunca é substituída. Se o Windows informar que não foi possível atualizar, feche programas que estejam usando o arquivo de backup e tente novamente.
+Consulta de dados conhecidos na cópia: por outra conexão, `PRAGMA integrity_check` → `ok`; `SELECT id, nome FROM clientes WHERE id = 2` → `(2, 'Rui fictício')`.
+Ao adicionar dados na origem e executar novamente o mesmo comando com `copia-nova.db`, os novos dados também aparecem no backup atualizado.
 Próxima ação após feedback: **[PREENCHER]** (o feedback ainda não foi recebido).
