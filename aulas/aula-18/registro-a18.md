@@ -19,7 +19,7 @@ A candidata é a integração da A17, sem mudar o desenho:
 main.py -> tela_venda.py / componentes.py -> controller.py (Cadastro + Venda) -> repositorio.py (SQLite) | memoria.py
 verificar.py (regressão) e README-A18.md (como rodar) acompanham a entrega
 ```
-Os testes usam bancos temporários; o banco real (`dados_sorveteria.db`) nunca é tocado. A montagem do pedido dura só em memória; cadastros e vendas duram no arquivo.
+Os testes usam bancos temporários; o banco real (`dados.db`) nunca é tocado. A montagem do pedido dura só em memória; cadastros e vendas duram no arquivo.
 
 ## Matriz de execução
 Para cada caso, registre previsão, observado, correção e nova execução.
@@ -75,7 +75,7 @@ Uma dificuldade, apoio e próxima tentativa: *(rascunho — ajuste ao que for ve
 
 ## Arquivos
 Versão executada e arquivos baixados: `main.py`, `tela_venda.py`, `componentes.py`, `controller.py`, `repositorio.py`, `memoria.py`, `modelos.py`, `pagamento.py`, `arquivos.py`, `perfis.py`, `relatorios.py`, `comparar_ctk.py`, `verificar.py`, `README-A18.md`.
-Caminho de dados fictícios usado (se houver): bancos temporários nos testes; `dados_sorveteria.db` ou `--banco ensaio.db` ao rodar a janela.
+Caminho de dados fictícios usado (se houver): bancos temporários nos testes; `dados.db` ou `--banco ensaio.db` ao rodar a janela.
 Entrega pelo fluxo combinado conferida por mim: **[PREENCHER]**
 
 ## Teoria e transferência

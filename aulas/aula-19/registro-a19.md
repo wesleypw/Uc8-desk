@@ -64,7 +64,7 @@ Correção/reteste ou pendência: sem correção.
 T08 — Entrega exclui ambientes/caches/dados reais e documenta limites.
 Previsão: `entrega.py` deixa de fora `.db`, `.sqlite3`, `.pyc`, `__pycache__`, `.venv`, `venv`, `.git`, `.env`, `-wal`, `.zip`; mantém `.py` e `.md`; o roteiro descreve limites.
 Observado: numa árvore de teste com esses itens a lista final foi `README.md, main.py, sub/modulo.py`; o zip tem o mesmo conteúdo; a pasta real da A19 não vazou nada e o roteiro tem "Limite e próximo teste" (T08 ok).
-Correção/reteste ou pendência: sem correção. **[PREENCHER]** confirmar que o banco real de verdade (`dados_sorveteria.db`) não está na pasta que você entrega.
+Correção/reteste ou pendência: sem correção. **[PREENCHER]** confirmar que o banco real de verdade (`dados.db`) não está na pasta que você entrega.
 
 T09 — Feedback indica evidência por indicador e teste de recuperação.
 Previsão: —

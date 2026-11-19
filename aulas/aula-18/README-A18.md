@@ -42,7 +42,7 @@ python main.py
 ```
 (No Linux/macOS pode ser `python3`.)
 
-Caminho do banco fictício: `dados_sorveteria.db`, criado ao lado do `main.py` na primeira execução.
+Caminho do banco fictício: `dados.db`, criado ao lado do `main.py` na primeira execução.
 Os testes **nunca** usam esse arquivo: criam bancos temporários.
 
 Como iniciar uma cópia de ensaio sem apagar a original:
@@ -50,7 +50,7 @@ Como iniciar uma cópia de ensaio sem apagar a original:
 python main.py --banco ensaio.db
 ```
 usa (e cria, se não existir) outro arquivo. Para ensaiar com os mesmos dados, copie o banco antes
-(`Copy-Item dados_sorveteria.db ensaio.db` no PowerShell; `cp dados_sorveteria.db ensaio.db` no Linux/macOS) e abra a cópia com `--banco`.
+(`Copy-Item dados.db ensaio.db` no PowerShell; `cp dados.db ensaio.db` no Linux/macOS) e abra a cópia com `--banco`.
 
 ## Verificação
 Comandos e resultados reais:

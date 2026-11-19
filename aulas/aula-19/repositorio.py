@@ -5,7 +5,6 @@ from datetime import datetime
 from pathlib import Path
 import sqlite3
 
-from backup_sqlite import sincronizar_backup
 from pagamento import FATORES, calcular_pagamento, preco_para_centavos
 
 
@@ -54,9 +53,7 @@ class RepositorioSqlite:
         if not caminho:
             raise ValueError("O caminho do banco de dados é obrigatório.")
         self.caminho = str(Path(caminho).resolve())
-        self.caminho_backup = str(Path(caminho_backup).resolve()) if caminho_backup else None
-        if self.caminho_backup == self.caminho:
-            raise ValueError("O banco principal e a cópia não podem ser o mesmo arquivo.")
+        self.caminho_backup = None
         self.iniciar()
 
     def conectar(self):
@@ -67,12 +64,10 @@ class RepositorioSqlite:
 
     @contextmanager
     def transacao(self):
-        """Confirma a transação e, se configurada, sincroniza a cópia do banco."""
+        """Confirma a transação sem atualizar cópias externas."""
         with closing(self.conectar()) as con:
             with con:
                 yield con
-        if self.caminho_backup:
-            sincronizar_backup(self.caminho, self.caminho_backup)
 
     def iniciar(self):
         """Cria as tabelas 'produtos' e 'clientes' caso ainda não existam."""

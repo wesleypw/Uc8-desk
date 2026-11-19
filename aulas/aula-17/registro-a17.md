@@ -88,7 +88,7 @@ Uma dificuldade, apoio e próxima tentativa: *(rascunho — ajuste ao que for ve
 
 ## Arquivos
 Versão executada e arquivos baixados: `main.py`, `tela_venda.py`, `componentes.py`, `controller.py`, `repositorio.py`, `memoria.py`, `modelos.py`, `pagamento.py`, `arquivos.py`, `perfis.py`, `relatorios.py`, `comparar_ctk.py`, `verificar.py`.
-Caminho de dados fictícios usado (se houver): `dados_sorveteria.db` ao lado do `main.py` (ou outro arquivo com `python main.py --banco ensaio.db`). Os testes usam bancos temporários.
+Caminho de dados fictícios usado (se houver): `dados.db` ao lado do `main.py` (ou outro arquivo com `python main.py --banco ensaio.db`). Os testes usam bancos temporários.
 Entrega pelo fluxo combinado conferida por mim: **[PREENCHER]**
 
 ## Teoria e transferência

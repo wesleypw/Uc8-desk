@@ -1,5 +1,6 @@
 # A19: confere o banco padrão e atualiza copia-nova.db somente quando necessário.
 #   python backup_sqlite.py
+# Caminhos relativos nos argumentos são relativos à pasta atual do terminal.
 # Também aceita caminhos explícitos: python backup_sqlite.py origem.db copia.db
 import sys
 from contextlib import closing
@@ -24,7 +25,7 @@ def criar_backup(origem, destino):
     - falha no meio ou cópia sem integridade -> a cópia anterior permanece intacta.
     Devolve o caminho (Path) da cópia criada ou atualizada.
     """
-    origem, destino = Path(origem), Path(destino)
+    origem, destino = Path(origem).resolve(), Path(destino).resolve()
     if not origem.is_file():
         raise FileNotFoundError(f"Banco de origem não encontrado: {origem}")
     if origem == destino or (destino.exists() and origem.samefile(destino)):
@@ -61,7 +62,7 @@ def criar_backup(origem, destino):
 
 def bancos_iguais(origem, destino):
     """Compara estrutura e conteúdo SQLite sem depender dos bytes físicos dos arquivos."""
-    origem, destino = Path(origem), Path(destino)
+    origem, destino = Path(origem).resolve(), Path(destino).resolve()
     if not origem.is_file():
         raise FileNotFoundError(f"Banco de origem não encontrado: {origem}")
     if not destino.is_file():
@@ -110,13 +111,18 @@ def resumo_da_copia(destino):
 if __name__ == "__main__":
     pasta = Path(__file__).resolve().parent
     if len(sys.argv) == 1:
-        origem = pasta / "dados_sorveteria.db"
+        origem = pasta / "dados.db"
         destino = pasta / "copia-nova.db"
     elif len(sys.argv) == 3:
-        origem, destino = Path(sys.argv[1]), Path(sys.argv[2])
+        origem = Path(sys.argv[1]).expanduser()
+        destino = Path(sys.argv[2]).expanduser()
+        origem = origem.resolve()
+        destino = destino.resolve()
     else:
         print("Uso: python backup_sqlite.py [origem.db copia.db]")
         raise SystemExit(2)
+    print(f"Origem: {Path(origem).resolve()}")
+    print(f"Cópia:  {Path(destino).resolve()}")
     destino_existia = Path(destino).exists()
     try:
         alterado = sincronizar_backup(origem, destino)

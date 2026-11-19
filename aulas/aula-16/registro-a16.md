@@ -28,7 +28,7 @@ modelos.py, arquivos.py, perfis.py, relatorios.py: reaproveitados das aulas ante
 - A janela só lê campos e mostra mensagens; quem decide inclusão x edição é o `codigo` (None = incluir, número = editar).
 - Contrato dos dois repositórios: `adicionar_*` devolve o ID; `listar_*` devolve cópias ordenadas por ID;
   `editar_*`/`excluir_*` levantam `ValueError` se o ID não existe; `excluir_*` exige `confirmado=True`.
-- Duração: memória vive no objeto (nova instância = vazio); SQLite vive no arquivo `dados_pizzaria.db` (reabre com dados).
+- Duração: memória vive no objeto (nova instância = vazio); SQLite vive no arquivo `dados.db` (reabre com dados).
 
 ## Matriz de execução
 Para cada caso, registre previsão, observado, correção e nova execução.
@@ -93,7 +93,7 @@ que funciona. Usei um assistente de IA como apoio para montar e testar esta etap
 
 ## Arquivos
 Versão executada e arquivos baixados: `main.py`, `controller.py`, `memoria.py`, `repositorio.py`, `modelos.py`, `pagamento.py`, `arquivos.py`, `perfis.py`, `relatorios.py`, `verificar.py`.
-Caminho de dados fictícios usado (se houver): `dados_pizzaria.db` (criado ao lado do `main.py` na primeira execução com SQLite); com `--memoria` nenhum arquivo é criado.
+Caminho de dados fictícios usado (se houver): `dados.db` (criado ao lado do `main.py` na primeira execução com SQLite); com `--memoria` nenhum arquivo é criado.
 Entrega pelo fluxo combinado conferida por mim: **[PREENCHER]**
 
 ## Teoria e transferência

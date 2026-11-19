@@ -25,7 +25,7 @@ def fabricas(tmp):
     """As duas implementações do mesmo contrato."""
     return {
         "memoria": lambda: RepositorioMemoria(),
-        "sqlite": lambda: RepositorioSqlite(Path(tmp) / "contrato.db"),
+        "sqlite": lambda: RepositorioSqlite(Path(tmp) / "dados.db"),
     }
 
 
@@ -71,7 +71,7 @@ def t03_duracao_dos_dados():
         mem = RepositorioMemoria()
         mem.adicionar_cliente("Lia")
         assert RepositorioMemoria().listar_clientes() == [], "nova instância da memória deve começar vazia"
-        caminho = Path(tmp) / "reabrir.db"
+        caminho = Path(tmp) / "dados.db"
         sql = RepositorioSqlite(caminho)
         sql.adicionar_cliente("Lia")
         sql.adicionar_produto("Picolé", "3,00")

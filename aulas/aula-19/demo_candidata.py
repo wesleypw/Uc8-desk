@@ -73,6 +73,9 @@ if __name__ == "__main__":
         raise SystemExit("Uso: python demo_candidata.py [banco-de-ensaio.db]")
     if len(sys.argv) == 2:
         banco = Path(sys.argv[1])
+        if not banco.is_absolute():
+            banco = Path(__file__).resolve().parent / banco
+        banco = banco.resolve()
         if banco.exists():
             raise SystemExit(f"{banco} já existe; use um nome novo para não misturar com outros dados.")
         imprimir(executar(banco, banco.with_suffix(".csv")))

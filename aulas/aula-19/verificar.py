@@ -164,7 +164,7 @@ def t07_copia_confere():
 def t08_entrega_limpa_e_limites():
     with tempfile.TemporaryDirectory() as tmp:
         base = Path(tmp)
-        for relativo in ("main.py", "README.md", "dados_sorveteria.db", "ensaio.sqlite3", "__pycache__/main.cpython-312.pyc",
+        for relativo in ("main.py", "README.md", "dados.db", "ensaio.sqlite3", "__pycache__/main.cpython-312.pyc",
                          ".venv/lib/x.py", "venv/bin/python", ".git/config", ".env", "dados.db-wal", "entrega-a19.zip",
                          "sub/modulo.py", "sub/__pycache__/m.pyc"):
             alvo = base / relativo
@@ -188,37 +188,32 @@ def t08_entrega_limpa_e_limites():
 
 
 # ---------------------------------------------------------------- T09
-def t09_copia_automatica():
+def t09_backup_manual():
     with tempfile.TemporaryDirectory() as tmp:
-        origem = Path(tmp) / "dados_sorveteria.db"
+        origem = Path(tmp) / "dados.db"
         copia = Path(tmp) / "copia-nova.db"
         repo = RepositorioSqlite(origem, copia)
-        conferir("cópia inicial", backup_sqlite.consultar_copia(copia, "PRAGMA integrity_check"), [("ok",)])
+        assert not copia.exists(), "a interface/repositório não deve criar ou atualizar a cópia"
 
         cliente = repo.adicionar_cliente("Lia")
         produto = repo.adicionar_produto("Casquinha", "6,50")
-        conferir("cadastros copiados", backup_sqlite.consultar_copia(
-            copia, "SELECT nome FROM clientes"), [("Lia",)])
-        conferir("produto copiado", backup_sqlite.consultar_copia(
-            copia, "SELECT nome, preco_centavos FROM produtos"), [("Casquinha", 650)])
-
         repo.editar_cliente(cliente, "Lia atualizada")
         repo.editar_produto(produto, "Casquinha grande", "8,00")
-        conferir("edições copiadas", backup_sqlite.consultar_copia(
-            copia, "SELECT nome FROM clientes"), [("Lia atualizada",)])
-        conferir("edição de produto copiada", backup_sqlite.consultar_copia(
-            copia, "SELECT nome, preco_centavos FROM produtos"), [("Casquinha grande", 800)])
 
         venda = repo.registrar_venda(cliente, [
             {"produto_id": produto, "quantidade": 2, "preco_centavos": 800}
         ], "PIX")
-        conferir("venda copiada", backup_sqlite.consultar_copia(
+        assert not copia.exists(), "operações no banco não devem criar ou atualizar a cópia"
+
+        backup_sqlite.criar_backup(origem, copia)
+        conferir("cadastros no backup manual", backup_sqlite.consultar_copia(
+            copia, "SELECT nome FROM clientes"), [("Lia atualizada",)])
+        conferir("produto no backup manual", backup_sqlite.consultar_copia(
+            copia, "SELECT nome, preco_centavos FROM produtos"), [("Casquinha grande", 800)])
+        conferir("venda no backup manual", backup_sqlite.consultar_copia(
             copia, "SELECT id, forma, total_centavos FROM vendas"), [(venda, "PIX", 1392)])
-        conferir("item de venda copiado", backup_sqlite.consultar_copia(
-            copia, "SELECT venda_id, produto_id, quantidade FROM itens_venda"),
-            [(venda, produto, 2)])
         conferir("integridade final", backup_sqlite.consultar_copia(copia, "PRAGMA integrity_check"), [("ok",)])
-    print("T09 ok — alterações de clientes, produtos e vendas atualizam automaticamente copia-nova.db")
+    print("T09 ok — banco nunca atualiza a cópia; o comando backup atualiza explicitamente")
 
 
 # ---------------------------------------------------------------- extras
@@ -259,7 +254,7 @@ def verificar():
     t06_origem_ausente()
     t07_copia_confere()
     t08_entrega_limpa_e_limites()
-    t09_copia_automatica()
+    t09_backup_manual()
     t_extras_backup()
     print("Não verificado por script (precisa de pessoa):")
     for caso, texto in PENDENCIAS_HUMANAS.items():

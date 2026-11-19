@@ -11,7 +11,7 @@ Este repositório reúne as atividades e mini projetos desenvolvidos durante as 
 Exemplo:
 
 ```bash
-cd aulas/aula-03-conversor-de-moedas
+cd aulas/aula-03
 python a03.py
 ```
 
@@ -35,64 +35,64 @@ Importante:
 UC8/
 ├── README.md
 └── aulas/
-    ├── aula-02-cadastro-em-memoria/
-    ├── aula-03-conversor-de-moedas/
-    ├── aula-04-media-escolar/
-    ├── aula-05-organizacao-sistema-escolar/
-    ├── aula-06-objetos-e-modulos/
-    ├── aula-07-produtos-e-pedidos/
-    ├── aula-08-pedidos-e-pagamentos/
-    ├── aula-09-atualizacao-e-remocao/
-    ├── aula-10-pizzaria-modelo-de-pedido/
-    ├── aula-11-pizzaria-ciclo-do-pedido/
-    ├── aula-12-catalogo-json/
-    ├── aula-13-relatorios-csv-e-perfis/
-    ├── aula-14-persistencia-sqlite/
-    ├── aula-15-crud-produtos-e-clientes/
-    ├── aula-16-controllers-coponentes-e-contratos/
-    ├── aula-17-integracao-e-customtkinter/
-    ├── aula-18-revisao-teste-e-readme/
-    └── aula-19-academia-e-demonstracoes-individuais/
+    ├── aula-02/
+    ├── aula-03/
+    ├── aula-04/
+    ├── aula-05/
+    ├── aula-06/
+    ├── aula-07/
+    ├── aula-08/
+    ├── aula-09/
+    ├── aula-10/
+    ├── aula-11/
+    ├── aula-12/
+    ├── aula-13/
+    ├── aula-14/
+    ├── aula-15/
+    ├── aula-16/
+    ├── aula-17/
+    ├── aula-18/
+    └── aula-19/
 ```
 
 ---
 
 ## Instruções por aula
 
-### aula-02-cadastro-em-memoria
+### aula-02
 
 Arquivo principal:
 - `a02.py` — cadastro em memória de dados simples, usado para praticar estruturas básicas e manipulação de listas.
 
 Como executar:
 ```bash
-cd aulas/aula-02-cadastro-em-memoria
+cd aulas/aula-02
 python a02.py
 ```
 
-### aula-03-conversor-de-moedas
+### aula-03
 
 Arquivo principal:
 - `a03.py` — conversor de valores monetários; serve para praticar entrada de dados, regras de negócio e cálculos.
 
 Como executar:
 ```bash
-cd aulas/aula-03-conversor-de-moedas
+cd aulas/aula-03
 python a03.py
 ```
 
-### aula-04-media-escolar
+### aula-04
 
 Arquivo principal:
 - `a04.py` — cálculo de média escolar com base em notas, útil para exercitar condicionais, listas e validações.
 
 Como executar:
 ```bash
-cd aulas/aula-04-media-escolar
+cd aulas/aula-04
 python a04.py
 ```
 
-### aula-05-organizacao-sistema-escolar
+### aula-05
 
 Arquivos:
 - `escolar_grupos.py` — lógica de organização e agrupamento dos dados escolares.
@@ -101,11 +101,11 @@ Arquivos:
 
 Como executar:
 ```bash
-cd aulas/aula-05-organizacao-sistema-escolar
+cd aulas/aula-05
 python escolar_janelas.py
 ```
 
-### aula-06-objetos-e-modulos
+### aula-06
 
 Arquivos:
 - `aluno.py` — definição da classe `Aluno` e comportamento relacionado ao aluno.
@@ -115,11 +115,11 @@ Arquivos:
 
 Como executar:
 ```bash
-cd aulas/aula-06-objetos-e-modulos
+cd aulas/aula-06
 python main.py
 ```
 
-### aula-07-produtos-e-pedidos
+### aula-07
 
 Arquivos:
 - `main.py` — aplicação principal do sistema de produtos e pedidos.
@@ -129,11 +129,11 @@ Arquivos:
 
 Como executar:
 ```bash
-cd aulas/aula-07-produtos-e-pedidos
+cd aulas/aula-07
 python main.py
 ```
 
-### aula-08-pedidos-e-pagamentos
+### aula-08
 
 Arquivos:
 - `main.py` — execução principal do fluxo de pedidos.
@@ -144,11 +144,11 @@ Arquivos:
 
 Como executar:
 ```bash
-cd aulas/aula-08-pedidos-e-pagamentos
+cd aulas/aula-08
 python main.py
 ```
 
-### aula-09-atualizacao-e-remocao
+### aula-09
 
 Arquivos:
 - `main.py` — fluxo principal de atualização e remoção de dados.
@@ -159,11 +159,11 @@ Arquivos:
 
 Como executar:
 ```bash
-cd aulas/aula-09-atualizacao-e-remocao
+cd aulas/aula-09
 python main.py
 ```
 
-### aula-10-pizzaria-modelo-de-pedido
+### aula-10
 
 Arquivos:
 - `main.py` — aplicação principal da pizzaria.
@@ -175,11 +175,11 @@ Arquivos:
 
 Como executar:
 ```bash
-cd aulas/aula-10-pizzaria-modelo-de-pedido
+cd aulas/aula-10
 python main.py
 ```
 
-### aula-11-pizzaria-ciclo-do-pedido
+### aula-11
 
 Arquivos:
 - `main.py` — execução do ciclo completo do pedido.
@@ -190,11 +190,11 @@ Arquivos:
 
 Como executar:
 ```bash
-cd aulas/aula-11-pizzaria-ciclo-do-pedido
+cd aulas/aula-11
 python main.py
 ```
 
-### aula-12-catalogo-json
+### aula-12
 
 Arquivos:
 - `main.py` — aplicação principal do catálogo.
@@ -206,11 +206,11 @@ Arquivos:
 
 Como executar:
 ```bash
-cd aulas/aula-12-catalogo-json
+cd aulas/aula-12
 python main.py
 ```
 
-### aula-13-relatorios-csv-e-perfis
+### aula-13
 
 Arquivos:
 - `main.py` — aplicação principal.
@@ -224,11 +224,11 @@ Arquivos:
 
 Como executar:
 ```bash
-cd aulas/aula-13-relatorios-csv-e-perfis
+cd aulas/aula-13
 python main.py
 ```
 
-### aula-14-persistencia-sqlite
+### aula-14
 
 Arquivos:
 - `main.py` — aplicação principal do sistema.
@@ -243,11 +243,11 @@ Arquivos:
 
 Como executar:
 ```bash
-cd aulas/aula-14-persistencia-sqlite
+cd aulas/aula-14
 python main.py
 ```
 
-### aula-15-crud-produtos-e-clientes
+### aula-15
 
 Arquivos:
 - `main.py` — aplicação principal.
@@ -259,17 +259,17 @@ Arquivos:
 - `repositorio.py` — acesso ao banco SQLite.
 - `tela_clientes.py` — interface para cadastro e edição de clientes.
 - `tela_produtos.py` — interface para cadastro e edição de produtos.
-- `dados_pizzaria.db` — banco de dados SQLite usado pelos testes e execução.
+- `dados.db` — banco de dados SQLite usado pelos testes e execução.
 - `registro-a15.md` e `registro-a15-2026-11-10.md` — registros da aula.
 - `verificar.py` — checagem da funcionalidade do CRUD.
 
 Como executar:
 ```bash
-cd aulas/aula-15-crud-produtos-e-clientes
+cd aulas/aula-15
 python main.py
 ```
 
-### aula-16-controllers-coponentes-e-contratos
+### aula-16
 
 Arquivos:
 - `main.py` — aplicação principal da entrega.
@@ -286,11 +286,11 @@ Arquivos:
 
 Como executar:
 ```bash
-cd aulas/aula-16-controllers-coponentes-e-contratos
+cd aulas/aula-16
 python main.py
 ```
 
-### aula-17-integracao-e-customtkinter
+### aula-17
 
 Arquivos:
 - `main.py` — aplicação principal.
@@ -309,11 +309,11 @@ Arquivos:
 
 Como executar:
 ```bash
-cd aulas/aula-17-integracao-e-customtkinter
+cd aulas/aula-17
 python main.py
 ```
 
-### aula-18-revisao-teste-e-readme
+### aula-18
 
 Arquivos:
 - `main.py` — janela principal com abas de venda, catálogo e clientes.
@@ -334,12 +334,12 @@ Arquivos:
 
 Como executar:
 ```bash
-cd aulas/aula-18-revisao-teste-e-readme
+cd aulas/aula-18
 python verificar.py
 python main.py
 ```
 
-### aula-19-academia-e-demonstracoes-individuais
+### aula-19
 
 Arquivos:
 - `main.py` — aplicação principal da demonstração.
@@ -363,7 +363,7 @@ Arquivos:
 
 Como executar:
 ```bash
-cd aulas/aula-19-academia-e-demonstracoes-individuais
+cd aulas/aula-19
 python main.py
 ```
 

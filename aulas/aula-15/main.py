@@ -17,7 +17,7 @@ def criar_janela():
     janela.columnconfigure(0, weight=1)
     janela.rowconfigure(0, weight=1)
 
-    caminho_db = Path("dados_pizzaria.db").resolve()
+    caminho_db = Path(__file__).resolve().parent / "dados.db"
     repo = RepositorioSqlite(caminho_db)
     sessao = SessaoDemo()
 

@@ -1,7 +1,7 @@
 """A16 — Interface fina: a janela lê os campos e mostra respostas; o controller coordena.
 
 Execução:
-    python main.py            # dados no SQLite (arquivo dados_pizzaria.db): persistem
+    python main.py            # dados no SQLite (arquivo dados.db): persistem
     python main.py --memoria  # dados em memória: somem ao fechar a janela
 """
 import sys
@@ -201,7 +201,7 @@ def criar_janela(repositorio=None, dialogos=None, descricao_armazenamento=None):
     janela.rowconfigure(0, weight=1)
 
     if repositorio is None:
-        caminho = Path(__file__).resolve().parent / "dados_pizzaria.db"
+        caminho = Path(__file__).resolve().parent / "dados.db"
         repositorio = RepositorioSqlite(caminho)
         descricao_armazenamento = f"SQLite — {caminho.name} (os dados persistem)"
     controller = CadastroController(repositorio)

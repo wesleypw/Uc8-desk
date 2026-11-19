@@ -17,7 +17,7 @@ def criar_janela():
     janela.rowconfigure(0, weight=1)
 
     # Localização do banco de dados SQLite desta aplicação
-    caminho_db = Path("dados_pizzaria.db").resolve()
+    caminho_db = Path(__file__).resolve().parent / "dados.db"
     repo = RepositorioSqlite(caminho_db)
 
     # Estado da sessão e do pedido (mantidos em memória nesta etapa)

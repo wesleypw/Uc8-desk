@@ -1,7 +1,7 @@
 """A18 (candidata) — Sorveteria integrada: Venda + Catálogo + Clientes sobre o mesmo banco SQLite.
 
 Execução (na pasta deste arquivo):
-    python main.py                       # usa dados_sorveteria.db ao lado do main.py
+    python main.py                       # usa dados.db ao lado do main.py
     python main.py --banco ensaio.db     # usa outro arquivo (ex.: cópia de ensaio)
 """
 import sys
@@ -14,7 +14,7 @@ from controller import CadastroController, VendaController
 from repositorio import RepositorioSqlite
 from tela_venda import PainelVenda
 
-BANCO_PADRAO = "dados_sorveteria.db"
+BANCO_PADRAO = "dados.db"
 
 
 def caminho_do_banco(argumentos):
