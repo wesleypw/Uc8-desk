@@ -35,6 +35,7 @@ Importante:
 UC8/
 ├── README.md
 └── aulas/
+    ├── aula-01/
     ├── aula-02/
     ├── aula-03/
     ├── aula-04/
@@ -52,44 +53,63 @@ UC8/
     ├── aula-16/
     ├── aula-17/
     ├── aula-18/
-    └── aula-19/
+    ├── aula-19/
+    └── aula-21/
 ```
 
 ---
 
 ## Instruções por aula
 
+### aula-01
+
+Arquivo principal:
+- `cadastro.py` — interface Tkinter para validar o cadastro fictício.
+- `terminal.py` — mesma validação em execução no terminal.
+
+Como executar:
+```bash
+cd aulas/aula-01
+python cadastro.py
+```
+
 ### aula-02
 
 Arquivo principal:
-- `a02.py` — cadastro em memória de dados simples, usado para praticar estruturas básicas e manipulação de listas.
+- `cadastro_completo.py` — interface completa de cadastro em memória.
+- `estado_cadastro.py` — funções de registrar e exibir o cadastro confirmado.
+- `a02.py` — versão inicial da prática.
 
 Como executar:
 ```bash
 cd aulas/aula-02
-python a02.py
+python cadastro_completo.py
 ```
 
 ### aula-03
 
 Arquivo principal:
-- `a03.py` — conversor de valores monetários; serve para praticar entrada de dados, regras de negócio e cálculos.
+- `conversor.py` — interface completa do conversor de valores monetários.
+- `calculos_moedas.py` — funções de validação e conversão.
+- `a03.py` — versão inicial da prática.
 
 Como executar:
 ```bash
 cd aulas/aula-03
-python a03.py
+python conversor.py
 ```
 
 ### aula-04
 
 Arquivo principal:
-- `a04.py` — cálculo de média escolar com base em notas, útil para exercitar condicionais, listas e validações.
+- `sistema_escolar.py` — interface completa do cálculo da média escolar.
+- `medias.py` — funções de validação e cálculo das cinco notas.
+- `a04.py` — versão inicial da prática.
 
 Como executar:
 ```bash
 cd aulas/aula-04
-python a04.py
+python sistema_escolar.py
 ```
 
 ### aula-05
